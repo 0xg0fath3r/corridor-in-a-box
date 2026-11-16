@@ -19,14 +19,15 @@ tags = ["key", "stellar", "secret"]
 # Known public values only. Each entry is a specific, documented non-secret, never a
 # pattern: a loose pattern here would let a real seed through.
 #
-# Rule-scoped on purpose. The gitleaks-action pins gitleaks 8.24.3, which has no
-# top-level `[[allowlists]]`/`targetRules` (that arrived later) and silently
-# ignores such a table, so an allowlist written that way never applied.
-[[rules.allowlists]]
+# Global (every rule) on purpose: the same public seed also trips the default
+# `generic-api-key` rule when it sits in a shell assignment. And `[allowlist]`
+# rather than `[[allowlists]]` + `targetRules`: the gitleaks-action pins gitleaks
+# 8.24.3, which has no top-level `[[allowlists]]` and silently ignores that table.
+[allowlist]
 description = "Public testnet fixtures"
 regexes = [
-  # The Stellar reference server's testnet distribution account, public config
-  # (examples/fund-testnet-sender.ts).
+  # The Anchor Platform reference server's testnet distribution account seed,
+  # shipped in the public image (examples/fund-testnet-sender.ts).
   '''SAJW2O2NH5QMMVWYAN352OEXS2RUY675A2HPK5HEG2FRR2NXPYA4OLYN''',
 ]
 
