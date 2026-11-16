@@ -18,9 +18,12 @@ tags = ["key", "stellar", "secret"]
 
 # Known public values only. Each entry is a specific, documented non-secret, never a
 # pattern: a loose pattern here would let a real seed through.
-[[allowlists]]
+#
+# Rule-scoped on purpose. The gitleaks-action pins gitleaks 8.24.3, which has no
+# top-level `[[allowlists]]`/`targetRules` (that arrived later) and silently
+# ignores such a table, so an allowlist written that way never applied.
+[[rules.allowlists]]
 description = "Public testnet fixtures"
-targetRules = ["stellar-secret-seed"]
 regexes = [
   # The Stellar reference server's testnet distribution account, public config
   # (examples/fund-testnet-sender.ts).

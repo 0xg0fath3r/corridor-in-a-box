@@ -82,7 +82,6 @@ CURSOR_LAG_FAIL_LEDGERS="${CURSOR_LAG_FAIL_LEDGERS:-180}"
 # DISTRIBUTION_SECRET for the reference server's own key, to an account only you
 # hold; `pnpm prepare:distribution` creates it and adds the USDC trustline.
 IMAGE_DISTRIBUTION_ACCOUNT="GBN4NNCDGJO4XW4KQU3CBIESUJWFVBUZPOKUZHT7W7WRB7CWOA7BXVQF"
-IMAGE_DISTRIBUTION_SECRET="SAJW2O2NH5QMMVWYAN352OEXS2RUY675A2HPK5HEG2FRR2NXPYA4OLYN"
 DISTRIBUTION_ACCOUNT="${DISTRIBUTION_ACCOUNT:-}"
 DISTRIBUTION_SECRET="${DISTRIBUTION_SECRET:-}"
 BRIDGE_ASSET_ISSUER="${BRIDGE_ASSET_ISSUER:-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5}"
@@ -142,10 +141,12 @@ apply_distribution_override() {
   for f in $(grep -rlF "$IMAGE_DISTRIBUTION_ACCOUNT" "$CONFIG_DIR" 2>/dev/null || true); do
     sed -i "s/$IMAGE_DISTRIBUTION_ACCOUNT/$DISTRIBUTION_ACCOUNT/g" "$f"
   done
-  if [ -n "$DISTRIBUTION_SECRET" ]; then
-    for f in $(grep -rlF "$IMAGE_DISTRIBUTION_SECRET" "$CONFIG_DIR" 2>/dev/null || true); do
-      sed -i "s/$IMAGE_DISTRIBUTION_SECRET/$DISTRIBUTION_SECRET/g" "$f"
-    done
+  # The reference server's own seed for that wallet is the first `secret:` after
+  # `distributionWallet:` in reference-config.yaml. Matched by position rather
+  # than by value, so the image's seed never has to appear in this repo.
+  if [ -n "$DISTRIBUTION_SECRET" ] && [ -f "$CONFIG_DIR/reference-config.yaml" ]; then
+    sed -i -E "/distributionWallet:/,/^[[:space:]]*secret:/ s|^([[:space:]]*secret:[[:space:]]*).*|\1$DISTRIBUTION_SECRET|" \
+      "$CONFIG_DIR/reference-config.yaml"
   fi
   grep -rqF "$DISTRIBUTION_ACCOUNT" "$CONFIG_DIR" \
     || die "config in $CONFIG_DIR names neither the image's distribution account nor $DISTRIBUTION_ACCOUNT; delete $CONFIG_DIR and re-run"
