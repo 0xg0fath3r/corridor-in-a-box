@@ -152,6 +152,7 @@ reference anchor doctor
   ✓ containers       db reference-db kafka ap-sep ap-ref ap-obs
   ✓ sep1             http://localhost:8080/.well-known/stellar.toml
   ✓ sep31-info       receive: JPYC USDC
+  ✓ distribution     GA4EGD3E…N4C3 exists and trusts the bridge asset
   ✓ cursor-lag       11 ledgers behind Horizon (limit 180)
 
 ✓ stack is fit to run a corridor
@@ -171,6 +172,29 @@ interesting cases are the borderline ones. The default limit of 180 ledgers
 was originally based on a 900s timeout, but with stall detection the practical
 window is now ~20s: the cursor must be near the tip to catch a fresh payment
 before the engine stops waiting. Set `CURSOR_LAG_FAIL_LEDGERS` to adjust the limit.
+
+#### The anchor's receiving account
+
+The anchor hands out its `distribution_account` as the deposit address. The
+Anchor Platform image hardcodes one (`GBN4NNCD…`) **and ships its seed**, so
+anyone running the platform's test profile can drain or merge it. On 2026-11-16
+someone merged it, and every settle failed with `op_no_destination`.
+
+So point the anchor at an account only you hold:
+
+```bash
+DISTRIBUTION_SECRET=S… pnpm prepare:distribution       # create it + USDC trustline (idempotent)
+DISTRIBUTION_ACCOUNT=G… DISTRIBUTION_SECRET=S… scripts/reference-anchor.sh up
+DISTRIBUTION_SECRET=S… CORRIDOR_SIGNER_SECRET=S… pnpm fund:testnet   # top the signer up from it
+```
+
+`up` rewrites the extracted config to use it (and dies if a cached config already
+names a different account; delete `$CONFIG_DIR` then). `doctor`'s `distribution`
+check fails when the configured account is missing or cannot hold the bridge
+asset. Settled USDC lands in that account, so `fund:testnet` paying the signer
+back from it keeps the testnet USDC going round instead of draining. The
+`reference-corridor` workflow does all three, with the seed in the
+`REFERENCE_DISTRIBUTION_SECRET` repository secret.
 
 #### The observer cursor
 
@@ -209,8 +233,14 @@ START_LEDGER=4030900 scripts/reference-anchor.sh up
 
 ```bash
 scripts/reference-anchor.sh up
+scripts/reference-anchor.sh payout-watch &   # the anchor's payout operator
 CORRIDOR_SIGNER_SECRET=S… pnpm verify:corridor
 ```
+
+`payout-watch` matters: the reference server never pays a SEP-31 transaction out
+on its own (its SEP-31 event handler is a no-op). Payout happens only when its
+test endpoint `POST /sep31/transactions/{id}/process` on `:8091` is called, so
+without the watcher every run settles, sits at `pending_receiver` and ends `held`.
 
 Drives one payment through every leg against the local reference server and
 exits non-zero unless the terminal state is `completed`. It prints the trail on

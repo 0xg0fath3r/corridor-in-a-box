@@ -9,6 +9,7 @@
 #   scripts/reference-anchor.sh status         show what is running
 #   scripts/reference-anchor.sh doctor         check the stack is fit to run a corridor
 #   scripts/reference-anchor.sh logs-dump DIR  write every container's logs to DIR
+#   scripts/reference-anchor.sh payout-watch   play the anchor's payout operator (runs until killed)
 #
 # `logs-dump` is the non-interactive counterpart of `logs`: it never follows, so
 # it terminates, which is what makes it usable from CI (see
@@ -75,6 +76,19 @@ START_LEDGER="${START_LEDGER:-}"
 # close time: beyond that an observer starting this far back cannot catch up to
 # a fresh payment before the engine gives up on it.
 CURSOR_LAG_FAIL_LEDGERS="${CURSOR_LAG_FAIL_LEDGERS:-180}"
+# The image's own distribution account and its seed. Both ship in the image as
+# test material, so anyone running the test profile can drain or merge that
+# account (someone merged it on 2026-11-16). Set DISTRIBUTION_ACCOUNT, and
+# DISTRIBUTION_SECRET for the reference server's own key, to an account only you
+# hold; `pnpm prepare:distribution` creates it and adds the USDC trustline.
+IMAGE_DISTRIBUTION_ACCOUNT="GBN4NNCDGJO4XW4KQU3CBIESUJWFVBUZPOKUZHT7W7WRB7CWOA7BXVQF"
+DISTRIBUTION_ACCOUNT="${DISTRIBUTION_ACCOUNT:-}"
+DISTRIBUTION_SECRET="${DISTRIBUTION_SECRET:-}"
+BRIDGE_ASSET_ISSUER="${BRIDGE_ASSET_ISSUER:-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5}"
+# The Kotlin reference server (business logic, :8091) and how often
+# `payout-watch` looks for transactions waiting on it.
+REF_URL="${REF_URL:-http://localhost:8091}"
+PAYOUT_POLL_SECS="${PAYOUT_POLL_SECS:-2}"
 
 log() { printf '• %s\n' "$*"; }
 die() { printf '✗ %s\n' "$*" >&2; exit 1; }
@@ -115,6 +129,35 @@ seed_observer_cursor() {
   psql_platform -c "DELETE FROM stellar_payment_observer_page_token;" >/dev/null
   psql_platform -c "INSERT INTO stellar_payment_observer_page_token (id, cursor) VALUES ('SINGLETON_ID', '$cursor');" >/dev/null
   log "observer cursor seeded at ledger $SEEDED_LEDGER (cursor $cursor)"
+}
+
+# Point the anchor's config at DISTRIBUTION_ACCOUNT instead of the image's
+# shared one. Runs on every `up`, because the extracted config is cached. A cached
+# config already rewritten to a DIFFERENT account no longer contains the image's
+# address, so the rewrite would silently do nothing; that case dies instead.
+apply_distribution_override() {
+  [ -n "$DISTRIBUTION_ACCOUNT" ] || return 0
+  local f
+  for f in $(grep -rlF "$IMAGE_DISTRIBUTION_ACCOUNT" "$CONFIG_DIR" 2>/dev/null || true); do
+    sed -i "s/$IMAGE_DISTRIBUTION_ACCOUNT/$DISTRIBUTION_ACCOUNT/g" "$f"
+  done
+  # The reference server's own seed for that wallet is the first `secret:` after
+  # `distributionWallet:` in reference-config.yaml. Matched by position rather
+  # than by value, so the image's seed never has to appear in this repo.
+  if [ -n "$DISTRIBUTION_SECRET" ] && [ -f "$CONFIG_DIR/reference-config.yaml" ]; then
+    sed -i -E "/distributionWallet:/,/^[[:space:]]*secret:/ s|^([[:space:]]*secret:[[:space:]]*).*|\1$DISTRIBUTION_SECRET|" \
+      "$CONFIG_DIR/reference-config.yaml"
+  fi
+  grep -rqF "$DISTRIBUTION_ACCOUNT" "$CONFIG_DIR" \
+    || die "config in $CONFIG_DIR names neither the image's distribution account nor $DISTRIBUTION_ACCOUNT; delete $CONFIG_DIR and re-run"
+  log "anchor receives on $DISTRIBUTION_ACCOUNT (overrides the image's shared account)"
+}
+
+# The account the running config receives payments on: the first
+# distribution_account in the extracted assets config.
+configured_distribution_account() {
+  grep -rhoE 'distribution_account:[[:space:]]*G[A-Z2-7]{55}' "$CONFIG_DIR" 2>/dev/null \
+    | head -1 | grep -oE 'G[A-Z2-7]{55}'
 }
 
 up() {
@@ -180,6 +223,7 @@ up() {
     podman rm -f ap-extract >/dev/null 2>&1 || true
     log "config extracted to $CONFIG_DIR"
   fi
+  apply_distribution_override
 
   # SEP + platform servers. This is what actually serves :8080.
   if ! podman container exists ap-sep 2>/dev/null; then
@@ -349,6 +393,24 @@ doctor() {
     fi
   fi
 
+  # The anchor hands out this address as the deposit address. If it does not
+  # exist on chain, or cannot hold the bridge asset, every settle fails with
+  # op_no_destination / op_no_trust after the payment has already been opened.
+  local dist acct
+  dist="$(configured_distribution_account)" || dist=""
+  if [ -z "$dist" ]; then
+    fail_ distribution "no distribution_account found in $CONFIG_DIR"
+  else
+    acct="$(curl -fsS --max-time 10 "$HORIZON_URL/accounts/$dist" 2>/dev/null)" || acct=""
+    if [ -z "$acct" ]; then
+      fail_ distribution "$dist does not exist on $HORIZON_URL - settle would fail op_no_destination"
+    elif ! printf '%s' "$acct" | grep -qF "$BRIDGE_ASSET_ISSUER"; then
+      fail_ distribution "$dist has no trustline to $BRIDGE_ASSET_ISSUER - settle would fail op_no_trust"
+    else
+      pass_ distribution "$dist exists and trusts the bridge asset"
+    fi
+  fi
+
   # The check this command exists for. Report the gap as ledgers, so a
   # borderline stack is legible rather than a bare pass/fail.
   local cursor tip lag
@@ -379,6 +441,36 @@ doctor() {
   return 1
 }
 
+# The reference server never pays a SEP-31 transaction out by itself: its event
+# processor handles SEP-6 only, and SEP-31 events go to a no-op. Payout is
+# triggered by its test-only POST /sep31/transactions/{id}/process (registered
+# when `enableTest` is on, which the bundled reference-config.yaml sets), which
+# calls notify_offchain_funds_sent and moves the transaction to `completed`.
+# Without something calling it, every run sits at `pending_receiver` until the
+# engine's timeout and ends `held`.
+#
+# `payout-watch` is that something: the anchor operator who sends the fiat leg.
+# It triggers /process once per SEP-31 transaction that reaches
+# `pending_receiver` (i.e. after the anchor has seen the payment on chain), and
+# never touches the sending side. Run it in the background for a corridor run.
+payout_watch() {
+  require_podman
+  local seen=" " id
+  log "payout-watch: paying out pending_receiver SEP-31 transactions via $REF_URL (every ${PAYOUT_POLL_SECS}s)"
+  while :; do
+    for id in $(psql_platform -c "SELECT id FROM sep31_transaction WHERE status = 'pending_receiver';" 2>/dev/null || true); do
+      case "$seen" in *" $id "*) continue ;; esac
+      if curl -fsS --max-time 10 -X POST "$REF_URL/sep31/transactions/$id/process" >/dev/null 2>&1; then
+        seen="$seen$id "
+        log "payout-watch: payout triggered for $id"
+      else
+        log "payout-watch: $REF_URL refused payout for $id; retrying"
+      fi
+    done
+    sleep "$PAYOUT_POLL_SECS"
+  done
+}
+
 down() {
   require_podman
   podman rm -f ap ap-sep ap-ref ap-obs ap-extract kafka db reference-db >/dev/null 2>&1 || true
@@ -393,5 +485,6 @@ case "${1:-up}" in
   logs-dump) logs_dump "${2:-anchor-logs}" ;;
   status) podman ps --filter network="$NET" --format 'table {{.Names}}\t{{.Status}}\t{{.Image}}' ;;
   doctor) doctor ;;
-  *) die "usage: $0 <up|down|logs|logs-dump [dir]|status|doctor>" ;;
+  payout-watch) payout_watch ;;
+  *) die "usage: $0 <up|down|logs|logs-dump [dir]|status|doctor|payout-watch>" ;;
 esac

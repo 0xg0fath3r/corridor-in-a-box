@@ -319,8 +319,21 @@ observer cursor](./docs/operations.md#the-observer-cursor)), #66 added a
 cursor-lag check to `doctor`, and #67/#75 added `pnpm verify:corridor` plus the
 scheduled [`reference-corridor`](https://github.com/ezedike-evan/corridor-in-a-box/actions/workflows/reference-corridor.yml)
 workflow, which runs the whole corridor against the reference stack. The stale
-cursor is no longer the known blocker. `reconcile → completed` stays **unproven**
-until that workflow passes; it currently fails.
+cursor is no longer the known blocker.
+
+**Update (2026-11-16): `reconcile → completed` proven.** The remaining failure
+was ours: `getTransaction` polled the anchor without the SEP-10 token, so every
+status read was a 403 that the engine logged as `error`. Fixed, together with
+two harness gaps (the anchor now receives on an account this repo controls, and
+`reference-anchor.sh payout-watch` triggers the reference server's SEP-31
+payout, which it never does on its own). [Run 43969161708](https://github.com/ezedike-evan/corridor-in-a-box/actions/runs/43969161708):
+
+```
+created → quoted → compliant → opened → verifying → settling → settled → reconciled → completed
+```
+
+Settle tx [`81c46422…`](https://stellar.expert/explorer/testnet/tx/81c4642216b884100b34fa018462bb9cd7587886307d59d923dccbf87011b630), 10 USDC, ledger 5768820. The fiat payout is
+simulated by the reference server; no third-party anchor is involved.
 
 ## Proof the settle leg is real
 
@@ -359,6 +372,7 @@ commercial agreement required:
 
 ```bash
 scripts/reference-anchor.sh up
+scripts/reference-anchor.sh payout-watch &   # plays the anchor's payout operator
 CORRIDOR_SIGNER_SECRET=S… pnpm verify:corridor
 ```
 
@@ -449,10 +463,10 @@ testnet anchor) is a manual step — the procedure is in
 live-verified on testnet, not just against mocks — see [Proof against a real
 SEP-31 anchor](#proof-against-a-real-sep-31-anchor) above (ledger 4030910, 10
 USDC to the anchor's deposit address) and [Proof the settle leg is
-real](#proof-the-settle-leg-is-real) above (ledger 4024693). What's still
-unproven against a real counterparty is `reconcile → completed` — see [where it
-stops, precisely](#proof-against-a-real-sep-31-anchor) above — and that is the
-one Phase-1 roadmap item still open.
+real](#proof-the-settle-leg-is-real) above (ledger 4024693). `reconcile →
+completed` was proven against the reference anchor on 2026-11-16 (see the update
+in [Proof against a real SEP-31 anchor](#proof-against-a-real-sep-31-anchor)),
+which closes Phase 1. No payment has moved through a third-party anchor yet.
 
 ## License
 

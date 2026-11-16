@@ -22,7 +22,7 @@ system. Items marked ✅ are done.
   the settle leg landing 10 USDC on its deposit address — tx
   [`4aea2432…`](https://stellar.expert/explorer/testnet/tx/4aea2432696c43104662fea98c86cecdfb12e2e831426e3a90e616eb7f183897),
   ledger 4030910, correctly attributed by hash memo. Captured in the README.
-- ⬜ `reconcile → completed` against a real counterparty. The run above reaches
+- ✅ `reconcile → completed` against a real counterparty. The run above reaches
   `settled` and then polls: the reference server's Stellar observer sat on a
   stale cursor, never matched the payment, and left the transaction at
   `pending_sender`. The engine's timeout/recovery path is what ran. **This leg
@@ -40,6 +40,17 @@ system. Items marked ✅ are done.
   It still ends red: after settling, the reference anchor's status poll returns `error`
   for about 15 minutes, so the run goes `settled → recovering → held`. That is the open
   question, and it stays ⬜.
+  _Update (2026-11-16):_ **closed.** That `error` was our own label for a failed poll:
+  `getTransaction` polled `GET /transactions/:id` without the SEP-10 token and got
+  403 every time. With that fixed, two harness problems surfaced and were fixed in the
+  same PR: the image's shared distribution account had been merged by a stranger
+  (its seed is public), so the anchor now receives on an account only this repo
+  holds; and the reference server never pays SEP-31 out by itself, so
+  `reference-anchor.sh payout-watch` triggers its payout endpoint, playing the
+  anchor's operator. [Run 43969161708](https://github.com/ezedike-evan/corridor-in-a-box/actions/runs/43969161708) went
+  `… → settled → reconciled → completed`, settle tx
+  [`81c46422…`](https://stellar.expert/explorer/testnet/tx/81c4642216b884100b34fa018462bb9cd7587886307d59d923dccbf87011b630) (10 USDC, ledger 5768820). Scope: this is the self-hosted
+  reference anchor with its fiat payout simulated, not a third-party anchor.
 
 ## Phase 2 — Durability & correctness
 

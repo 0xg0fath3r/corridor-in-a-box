@@ -181,6 +181,57 @@ describe("SEP-10 auth", () => {
     expect(q.ok).toBe(true);
     expect(calls.every((x) => !x.url.includes("/auth"))).toBe(true);
   });
+
+  // SEP-31 puts GET /transactions/:id behind SEP-10 like every other endpoint.
+  // Polling it anonymously got a 403 on every poll from the Anchor Platform
+  // reference server, so reconcile never saw the anchor's status and the run
+  // ended `held` after the payment had already been received.
+  it("attaches the JWT when polling GET /transactions/:id", async () => {
+    const token = jwt(900);
+    const signer: Sep10Signer = {
+      account: "GSIGNER",
+      signChallenge: async (xdr) => `signed(${xdr})`,
+    };
+    const { fn, calls } = fakeFetch({
+      "GET /auth": res({ transaction: "CHALLENGE_XDR", network_passphrase: PASSPHRASE }),
+      "POST /auth": res({ token }),
+      "GET /sep31/transactions/tx-1": res({
+        transaction: { id: "tx-1", status: "completed" },
+      }),
+    });
+    const c = corridor({
+      transfer_server_sep31: "https://d.example/sep31",
+      web_auth: "https://d.example/auth",
+    });
+    const adapter = new Sep31Adapter(c, { fetchImpl: fn, sep10: signer });
+
+    const r = await adapter.getTransaction("tx-1");
+    expect(r.ok).toBe(true);
+    const getCall = calls.find((x) => x.url.includes("/sep31/transactions/tx-1"));
+    expect(getCall?.headers.authorization).toBe(`Bearer ${token}`);
+  });
+
+  it("does not poll GET /transactions/:id anonymously when the handshake fails", async () => {
+    const signer: Sep10Signer = {
+      account: "GSIGNER",
+      signChallenge: async (xdr) => `signed(${xdr})`,
+    };
+    const { fn, calls } = fakeFetch({
+      "GET /auth": res({}, false, 500),
+      "GET /sep31/transactions/tx-1": res({
+        transaction: { id: "tx-1", status: "completed" },
+      }),
+    });
+    const c = corridor({
+      transfer_server_sep31: "https://d.example/sep31",
+      web_auth: "https://d.example/auth",
+    });
+    const adapter = new Sep31Adapter(c, { fetchImpl: fn, sep10: signer });
+
+    const r = await adapter.getTransaction("tx-1");
+    expect(r.ok).toBe(false);
+    expect(calls.some((x) => x.url.includes("/sep31/transactions/tx-1"))).toBe(false);
+  });
 });
 
 describe("SEP-38 quote request shape", () => {

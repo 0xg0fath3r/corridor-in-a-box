@@ -16,7 +16,10 @@
 // `stellar/anchor-platform` Docker image at `/config/reference-config.yaml` as
 // test material for exactly this purpose, and the account exists only on
 // testnet. It is hardcoded here rather than read from the image so the script
-// works without the container running. Never reuse this pattern for a real key:
+// works without the container running. Because the seed is public, anyone can
+// empty or merge that account (it was merged on 2026-11-16); set
+// DISTRIBUTION_SECRET to your own account (`pnpm prepare:distribution`) instead.
+// Never reuse this pattern for a real key:
 // production signing goes through an ExternalSigner (docs/key-management.md).
 
 import {
