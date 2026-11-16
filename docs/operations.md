@@ -233,8 +233,14 @@ START_LEDGER=4030900 scripts/reference-anchor.sh up
 
 ```bash
 scripts/reference-anchor.sh up
+scripts/reference-anchor.sh payout-watch &   # the anchor's payout operator
 CORRIDOR_SIGNER_SECRET=S… pnpm verify:corridor
 ```
+
+`payout-watch` matters: the reference server never pays a SEP-31 transaction out
+on its own (its SEP-31 event handler is a no-op). Payout happens only when its
+test endpoint `POST /sep31/transactions/{id}/process` on `:8091` is called, so
+without the watcher every run settles, sits at `pending_receiver` and ends `held`.
 
 Drives one payment through every leg against the local reference server and
 exits non-zero unless the terminal state is `completed`. It prints the trail on

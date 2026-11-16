@@ -9,6 +9,7 @@
 #   scripts/reference-anchor.sh status         show what is running
 #   scripts/reference-anchor.sh doctor         check the stack is fit to run a corridor
 #   scripts/reference-anchor.sh logs-dump DIR  write every container's logs to DIR
+#   scripts/reference-anchor.sh payout-watch   play the anchor's payout operator (runs until killed)
 #
 # `logs-dump` is the non-interactive counterpart of `logs`: it never follows, so
 # it terminates, which is what makes it usable from CI (see
@@ -85,6 +86,10 @@ IMAGE_DISTRIBUTION_SECRET="SAJW2O2NH5QMMVWYAN352OEXS2RUY675A2HPK5HEG2FRR2NXPYA4O
 DISTRIBUTION_ACCOUNT="${DISTRIBUTION_ACCOUNT:-}"
 DISTRIBUTION_SECRET="${DISTRIBUTION_SECRET:-}"
 BRIDGE_ASSET_ISSUER="${BRIDGE_ASSET_ISSUER:-GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5}"
+# The Kotlin reference server (business logic, :8091) and how often
+# `payout-watch` looks for transactions waiting on it.
+REF_URL="${REF_URL:-http://localhost:8091}"
+PAYOUT_POLL_SECS="${PAYOUT_POLL_SECS:-2}"
 
 log() { printf '• %s\n' "$*"; }
 die() { printf '✗ %s\n' "$*" >&2; exit 1; }
@@ -435,6 +440,36 @@ doctor() {
   return 1
 }
 
+# The reference server never pays a SEP-31 transaction out by itself: its event
+# processor handles SEP-6 only, and SEP-31 events go to a no-op. Payout is
+# triggered by its test-only POST /sep31/transactions/{id}/process (registered
+# when `enableTest` is on, which the bundled reference-config.yaml sets), which
+# calls notify_offchain_funds_sent and moves the transaction to `completed`.
+# Without something calling it, every run sits at `pending_receiver` until the
+# engine's timeout and ends `held`.
+#
+# `payout-watch` is that something: the anchor operator who sends the fiat leg.
+# It triggers /process once per SEP-31 transaction that reaches
+# `pending_receiver` (i.e. after the anchor has seen the payment on chain), and
+# never touches the sending side. Run it in the background for a corridor run.
+payout_watch() {
+  require_podman
+  local seen=" " id
+  log "payout-watch: paying out pending_receiver SEP-31 transactions via $REF_URL (every ${PAYOUT_POLL_SECS}s)"
+  while :; do
+    for id in $(psql_platform -c "SELECT id FROM sep31_transaction WHERE status = 'pending_receiver';" 2>/dev/null || true); do
+      case "$seen" in *" $id "*) continue ;; esac
+      if curl -fsS --max-time 10 -X POST "$REF_URL/sep31/transactions/$id/process" >/dev/null 2>&1; then
+        seen="$seen$id "
+        log "payout-watch: payout triggered for $id"
+      else
+        log "payout-watch: $REF_URL refused payout for $id; retrying"
+      fi
+    done
+    sleep "$PAYOUT_POLL_SECS"
+  done
+}
+
 down() {
   require_podman
   podman rm -f ap ap-sep ap-ref ap-obs ap-extract kafka db reference-db >/dev/null 2>&1 || true
@@ -449,5 +484,6 @@ case "${1:-up}" in
   logs-dump) logs_dump "${2:-anchor-logs}" ;;
   status) podman ps --filter network="$NET" --format 'table {{.Names}}\t{{.Status}}\t{{.Image}}' ;;
   doctor) doctor ;;
-  *) die "usage: $0 <up|down|logs|logs-dump [dir]|status|doctor>" ;;
+  payout-watch) payout_watch ;;
+  *) die "usage: $0 <up|down|logs|logs-dump [dir]|status|doctor|payout-watch>" ;;
 esac

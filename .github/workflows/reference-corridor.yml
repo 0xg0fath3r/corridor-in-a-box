@@ -120,8 +120,17 @@ jobs:
           FUND_AMOUNT: "30"
           FUND_MIN_BALANCE: "50"
 
+      # payout-watch plays the anchor's payout operator: the reference server
+      # only pays a SEP-31 transaction out when its test endpoint is called (see
+      # reference-anchor.sh). Its log lands next to the platform logs.
       - name: Run the corridor to completed
-        run: pnpm verify:corridor
+        run: |
+          set -euo pipefail
+          mkdir -p anchor-logs
+          scripts/reference-anchor.sh payout-watch > anchor-logs/payout-watch.log 2>&1 &
+          watcher=$!
+          trap 'kill "$watcher" 2>/dev/null || true' EXIT
+          pnpm verify:corridor
         env:
           CORRIDOR_SIGNER_SECRET: ${{ env.SIGNER_SECRET }}
 

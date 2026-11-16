@@ -359,6 +359,7 @@ commercial agreement required:
 
 ```bash
 scripts/reference-anchor.sh up
+scripts/reference-anchor.sh payout-watch &   # plays the anchor's payout operator
 CORRIDOR_SIGNER_SECRET=S… pnpm verify:corridor
 ```
 
