@@ -26,6 +26,12 @@ jobs:
     # starting a step. Same fix as nightly-live-anchor.yml and attest-anchors.yml.
     env:
       SIGNER_SECRET: ${{ secrets.CORRIDOR_SIGNER_SECRET }}
+      # The account the reference anchor receives on, and the one the signer is
+      # topped up from. The image ships its own, but that account's seed is
+      # public, so anyone can merge it out from under us (someone did on
+      # 2026-11-16, and every settle failed op_no_destination). This one only
+      # this repo holds.
+      DISTRIBUTION_SECRET: ${{ secrets.REFERENCE_DISTRIBUTION_SECRET }}
       # The corridor this job runs. Asserted to be testnet below before
       # anything is signed.
       MANIFEST: corridors/reference.corridor.yaml
@@ -73,7 +79,20 @@ jobs:
                "testnet seed."
           exit 1
 
+      - name: Fail early without the anchor's receiving key
+        if: ${{ env.DISTRIBUTION_SECRET == '' }}
+        run: |
+          echo "::error::REFERENCE_DISTRIBUTION_SECRET is not set. The reference anchor needs" \
+               "a receiving account only this repo controls — set the repository secret to" \
+               "a testnet seed; pnpm prepare:distribution creates the account."
+          exit 1
+
       # --- the run ---------------------------------------------------------
+
+      # Before `up`, so reference-anchor.sh can point the anchor's config at it.
+      # Writes DISTRIBUTION_ACCOUNT to $GITHUB_ENV.
+      - name: Prepare the anchor's receiving account
+        run: pnpm prepare:distribution
 
       - name: Stand up the reference anchor
         run: scripts/reference-anchor.sh up
@@ -88,16 +107,17 @@ jobs:
       - name: Health gate
         run: scripts/reference-anchor.sh doctor
 
-      # Every run settles real testnet USDC from the signer and nothing else
-      # refills it, so without this the account drains and the job goes red with
-      # op_underfunded. fund:testnet is idempotent about the trustline, and with
-      # FUND_MIN_BALANCE it pays only when the balance is low (a run settles
-      # 10 USDC), so a healthy signer does not drain the distribution account.
+      # Every run settles 10 testnet USDC from the signer into the anchor's
+      # receiving account, so the USDC goes round in a loop: this step pays it
+      # back from that account (DISTRIBUTION_SECRET, job env) when the signer
+      # runs low. FUND_AMOUNT is kept below FUND_MIN_BALANCE so the receiving
+      # account always holds enough to pay it: by the time the signer drops
+      # under 50, at least 30 has landed on the other side.
       - name: Top up the signer
         run: pnpm fund:testnet
         env:
           CORRIDOR_SIGNER_SECRET: ${{ env.SIGNER_SECRET }}
-          FUND_AMOUNT: "100"
+          FUND_AMOUNT: "30"
           FUND_MIN_BALANCE: "50"
 
       - name: Run the corridor to completed
