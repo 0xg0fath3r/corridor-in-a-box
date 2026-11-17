@@ -5,13 +5,13 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ezedike-evan/corridor-in-a-box.git",
+    "url": "git+https://github.com/corridor-in-a-box/corridor-in-a-box.git",
     "directory": "packages/adapter-kit"
   },
   "bugs": {
-    "url": "https://github.com/ezedike-evan/corridor-in-a-box/issues"
+    "url": "https://github.com/corridor-in-a-box/corridor-in-a-box/issues"
   },
-  "homepage": "https://github.com/ezedike-evan/corridor-in-a-box#readme",
+  "homepage": "https://github.com/corridor-in-a-box/corridor-in-a-box#readme",
   "keywords": [
     "stellar",
     "corridor",

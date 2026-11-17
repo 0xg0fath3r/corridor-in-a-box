@@ -1,10 +1,10 @@
 # RFC 0003: SEP-24 interactive handoff — addendum to RFC 0001
 
 - Status: proposed
-- Issue: [#203](https://github.com/ezedike-evan/corridor-in-a-box/issues/203)
+- Issue: [#203](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/203)
 - Addendum to: [RFC 0001](0001-protocol-agnostic-corridors.md) (protocol-agnostic corridors), [RFC 0002](0002-source-side-funding.md) (source-side funding)
-- Depends on: [#202](https://github.com/ezedike-evan/corridor-in-a-box/issues/202) (closed — SEP-24 exclusion), [#202 analysis](../protocols/sep24.md)
-- Related: [#214](https://github.com/ezedike-evan/corridor-in-a-box/issues/214), [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216)
+- Depends on: [#202](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/202) (closed — SEP-24 exclusion), [#202 analysis](../protocols/sep24.md)
+- Related: [#214](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/214), [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216)
 
 ## Summary
 
@@ -93,7 +93,7 @@ The prototype shape the issue mentions — a `DepositInstructions` kind
 `interactive` carrying the URL, with `SettlementStrategy` refusing to settle
 until the instructions are resolved — is sound **as the edge service's own
 type**, and it is the right shape for RFC 0001's port #2 (a discriminated
-`DepositInstructions` union, [#183](https://github.com/ezedike-evan/corridor-in-a-box/issues/183)).
+`DepositInstructions` union, [#183](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/183)).
 It is only wrong as an `AnchorAdapter` return value in the unattended engine,
 because the unattended engine has no way to resolve it.
 
@@ -180,10 +180,10 @@ unattended engine):
   engine. Out of this repo.
 - `DepositInstructions`: add the `interactive` kind to the union, with the
   `SettlementStrategy` refusing to settle until it is resolved (RFC 0001 port
-  #2, [#183](https://github.com/ezedike-evan/corridor-in-a-box/issues/183)).
+  #2, [#183](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/183)).
 - `source.funding.mode: sep24_handoff`: the manifest field and the engine's
   acceptance of a caller-supplied deposit reference (RFC 0002,
-  [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216)).
+  [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216)).
 - Runbook: what an operator does when a SEP-24 session expires — which is
   "nothing moved, nothing to refund".
 

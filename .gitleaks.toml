@@ -21,7 +21,7 @@ tags = ["key", "stellar", "secret"]
 #
 # Global (every rule) on purpose: the same public seed also trips the default
 # `generic-api-key` rule when it sits in a shell assignment. And `[allowlist]`
-# rather than `[[allowlists]]` + `targetRules`: the gitleaks-action pins gitleaks
+# rather than `[[allowlists]]` + `targetRules`: CI (ci.yml) pins gitleaks
 # 8.24.3, which has no top-level `[[allowlists]]` and silently ignores that table.
 [allowlist]
 description = "Public testnet fixtures"
@@ -33,7 +33,12 @@ regexes = [
 
 # The generic high-entropy rule trips on public keys (G...) and fixtures in tests. Only
 # that rule is relaxed there; `stellar-secret-seed` still applies to tests/.
-[[allowlists]]
+# Declared as an override of the default rule (same id, allowlist only), which
+# gitleaks merges into the default definition: 8.24.3 ignores a top-level
+# `[[allowlists]]` with `targetRules`.
+[[rules]]
+id = "generic-api-key"
+
+[[rules.allowlists]]
 description = "Test fixtures: public keys and sample values"
-targetRules = ["generic-api-key"]
 paths = ['''^tests/''']

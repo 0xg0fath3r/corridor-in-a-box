@@ -1,7 +1,7 @@
 // Quarantine for flaky tests: keep a timing- or network-dependent test in the
 // tree, out of the blocking `pnpm test` run, without skipping it silently.
 //
-//   quarantine("https://github.com/ezedike-evan/corridor-in-a-box/issues/123", "socket 413", () => {
+//   quarantine("https://github.com/corridor-in-a-box/corridor-in-a-box/issues/123", "socket 413", () => {
 //     it("rejects a body over the cap", async () => { ... });
 //   });
 //

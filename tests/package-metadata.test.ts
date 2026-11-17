@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const PACKAGES_DIR = fileURLToPath(new URL("../packages/", import.meta.url));
-const REPO_URL = "git+https://github.com/ezedike-evan/corridor-in-a-box.git";
+const REPO_URL = "git+https://github.com/corridor-in-a-box/corridor-in-a-box.git";
 
 type PackageJson = Record<string, unknown>;
 

@@ -1,8 +1,8 @@
 # RFC 0001: Protocol-agnostic corridors
 
 - Status: proposed
-- Issue: [#178](https://github.com/ezedike-evan/corridor-in-a-box/issues/178)
-- Depends on: [#179](https://github.com/ezedike-evan/corridor-in-a-box/issues/179), [#182](https://github.com/ezedike-evan/corridor-in-a-box/issues/182)
+- Issue: [#178](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/178)
+- Depends on: [#179](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/179), [#182](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/182)
 
 ## Summary
 
@@ -52,15 +52,15 @@ dest:
     transfer_server: https://dest.example/sep6
 ```
 
-The schema work and migration are tracked independently: [#179](https://github.com/ezedike-evan/corridor-in-a-box/issues/179), [#180](https://github.com/ezedike-evan/corridor-in-a-box/issues/180), [#181](https://github.com/ezedike-evan/corridor-in-a-box/issues/181), and source-side protocol support [#182](https://github.com/ezedike-evan/corridor-in-a-box/issues/182).
+The schema work and migration are tracked independently: [#179](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/179), [#180](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/180), [#181](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/181), and source-side protocol support [#182](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/182).
 
 ## Engine ports
 
-1. Add `capabilities()` to `AnchorAdapter`; route checks use declared support rather than assuming SEP-31 ([#187](https://github.com/ezedike-evan/corridor-in-a-box/issues/187), [#188](https://github.com/ezedike-evan/corridor-in-a-box/issues/188)).
-2. Replace `OpenTransaction` with a discriminated `DepositInstructions` union so an address+memo cannot be confused with off-chain instructions ([#183](https://github.com/ezedike-evan/corridor-in-a-box/issues/183)).
-3. Extract `settle()` behind `SettlementStrategy`; strategies must return a typed settlement reference and declare whether funds moved ([#184](https://github.com/ezedike-evan/corridor-in-a-box/issues/184)). An adapter-reported/off-chain result needs a non-Stellar settlement reference ([#186](https://github.com/ezedike-evan/corridor-in-a-box/issues/186)).
-4. Add `QuoteProvider` and `ComplianceStrategy` ports, preserving the existing SEP-38 and SEP-12 behavior as defaults ([#189](https://github.com/ezedike-evan/corridor-in-a-box/issues/189), [#193](https://github.com/ezedike-evan/corridor-in-a-box/issues/193)).
-5. Add `SourceAnchorAdapter` only with the separate source-funding design; it is not a hidden responsibility of the destination adapter ([#214](https://github.com/ezedike-evan/corridor-in-a-box/issues/214), [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216)).
+1. Add `capabilities()` to `AnchorAdapter`; route checks use declared support rather than assuming SEP-31 ([#187](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/187), [#188](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/188)).
+2. Replace `OpenTransaction` with a discriminated `DepositInstructions` union so an address+memo cannot be confused with off-chain instructions ([#183](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/183)).
+3. Extract `settle()` behind `SettlementStrategy`; strategies must return a typed settlement reference and declare whether funds moved ([#184](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/184)). An adapter-reported/off-chain result needs a non-Stellar settlement reference ([#186](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/186)).
+4. Add `QuoteProvider` and `ComplianceStrategy` ports, preserving the existing SEP-38 and SEP-12 behavior as defaults ([#189](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/189), [#193](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/193)).
+5. Add `SourceAnchorAdapter` only with the separate source-funding design; it is not a hidden responsibility of the destination adapter ([#214](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/214), [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216)).
 
 Generic SEP adapters stay open source. A bespoke adapter may be private, but it must implement the same ports and conformance checks; private code cannot weaken engine invariants.
 
@@ -78,14 +78,14 @@ The operator receives source-side value, acquires/holds the bridge asset, then s
 
 ## Rollout
 
-1. Agree this RFC and add the manifest union ([#179](https://github.com/ezedike-evan/corridor-in-a-box/issues/179)); preserve legacy SEP-31 parsing ([#180](https://github.com/ezedike-evan/corridor-in-a-box/issues/180)) and migrate checked-in manifests ([#181](https://github.com/ezedike-evan/corridor-in-a-box/issues/181)).
-2. Add `source.protocol` ([#182](https://github.com/ezedike-evan/corridor-in-a-box/issues/182)), typed deposit instructions ([#183](https://github.com/ezedike-evan/corridor-in-a-box/issues/183)), adapter capabilities ([#187](https://github.com/ezedike-evan/corridor-in-a-box/issues/187), [#188](https://github.com/ezedike-evan/corridor-in-a-box/issues/188)), and settlement/quote/compliance ports ([#184](https://github.com/ezedike-evan/corridor-in-a-box/issues/184), [#186](https://github.com/ezedike-evan/corridor-in-a-box/issues/186), [#189](https://github.com/ezedike-evan/corridor-in-a-box/issues/189), [#193](https://github.com/ezedike-evan/corridor-in-a-box/issues/193)).
-3. Ship SEP-6 incrementally: scaffold adapter ([#195](https://github.com/ezedike-evan/corridor-in-a-box/issues/195)), quote behavior ([#196](https://github.com/ezedike-evan/corridor-in-a-box/issues/196)), withdrawal instructions ([#197](https://github.com/ezedike-evan/corridor-in-a-box/issues/197)), status mapping ([#198](https://github.com/ezedike-evan/corridor-in-a-box/issues/198)), mock conformance ([#200](https://github.com/ezedike-evan/corridor-in-a-box/issues/200)), and opt-in live test ([#201](https://github.com/ezedike-evan/corridor-in-a-box/issues/201)).
-4. Document SEP-24 exclusion ([#202](https://github.com/ezedike-evan/corridor-in-a-box/issues/202)); add bespoke adapter guidance ([#205](https://github.com/ezedike-evan/corridor-in-a-box/issues/205)). The interactive-handoff contract is [RFC 0003](0003-sep24-interactive-handoff.md).
-5. Design and implement source funding separately ([#214](https://github.com/ezedike-evan/corridor-in-a-box/issues/214), [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216)); the source-funding design is [RFC 0002](0002-source-side-funding.md).
+1. Agree this RFC and add the manifest union ([#179](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/179)); preserve legacy SEP-31 parsing ([#180](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/180)) and migrate checked-in manifests ([#181](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/181)).
+2. Add `source.protocol` ([#182](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/182)), typed deposit instructions ([#183](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/183)), adapter capabilities ([#187](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/187), [#188](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/188)), and settlement/quote/compliance ports ([#184](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/184), [#186](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/186), [#189](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/189), [#193](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/193)).
+3. Ship SEP-6 incrementally: scaffold adapter ([#195](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/195)), quote behavior ([#196](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/196)), withdrawal instructions ([#197](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/197)), status mapping ([#198](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/198)), mock conformance ([#200](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/200)), and opt-in live test ([#201](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/201)).
+4. Document SEP-24 exclusion ([#202](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/202)); add bespoke adapter guidance ([#205](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/205)). The interactive-handoff contract is [RFC 0003](0003-sep24-interactive-handoff.md).
+5. Design and implement source funding separately ([#214](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/214), [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216)); the source-funding design is [RFC 0002](0002-source-side-funding.md).
 
 Each stage keeps the SEP-31 adapter as the default and requires protocol-specific tests before a corridor can be marked runnable.
 
 ## Decision
 
-Adopt the explicit protocol/capability/strategy model. Implement SEP-31 first, SEP-6 as the next generic adapter, and support bespoke APIs through adapters. Do not add SEP-24 to unattended engine runs; the interactive-handoff contract for a future edge service is [RFC 0003](0003-sep24-interactive-handoff.md). Claimable-balance settlement is a separate settlement mode only where the anchor explicitly supports and observes it; it is not a replacement for the SEP-31 payment+memo contract (see [#177](https://github.com/ezedike-evan/corridor-in-a-box/issues/177)).
+Adopt the explicit protocol/capability/strategy model. Implement SEP-31 first, SEP-6 as the next generic adapter, and support bespoke APIs through adapters. Do not add SEP-24 to unattended engine runs; the interactive-handoff contract for a future edge service is [RFC 0003](0003-sep24-interactive-handoff.md). Claimable-balance settlement is a separate settlement mode only where the anchor explicitly supports and observes it; it is not a replacement for the SEP-31 payment+memo contract (see [#177](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/177)).

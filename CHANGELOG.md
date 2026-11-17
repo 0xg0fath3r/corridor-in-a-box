@@ -26,7 +26,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   what the firm-quote-only adapter actually does. The `sep6` no-quote-server message changed
   accordingly.
 
-### Added — every library package builds to `dist/` with type declarations ([#262](https://github.com/ezedike-evan/corridor-in-a-box/issues/262))
+### Added — every library package builds to `dist/` with type declarations ([#262](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/262))
 
 - Each `@corridor/*` package has a `tsup.config.ts` and a `build` script emitting ESM plus
   `.d.ts`, conditional `exports` (`types`, `source`, `import`) and `"files": ["dist"]`, so
@@ -40,7 +40,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   script. With this, `scripts/release-check.ts` no longer refuses a release for exporting
   TypeScript source.
 
-### Added — an OpenAPI 3.1 spec for `@corridor/service`, tested against `route()` ([#264](https://github.com/ezedike-evan/corridor-in-a-box/issues/264))
+### Added — an OpenAPI 3.1 spec for `@corridor/service`, tested against `route()` ([#264](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/264))
 
 - `packages/service/openapi.yaml` describes every route (`/healthz`, `/readyz`, `/metrics`,
   `POST /payments`, `GET /payments/{key}`, the SEP-31 callback), the request and response
@@ -51,18 +51,18 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   fails if a route returns a shape the spec does not allow, or an error code or status goes
   undocumented. CI also lints the document with Redocly.
 
-### Added — coverage thresholds in CI ([#280](https://github.com/ezedike-evan/corridor-in-a-box/issues/280))
+### Added — coverage thresholds in CI ([#280](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/280))
 
 - `pnpm test:coverage` (`@vitest/coverage-v8`) enforces global floors and stricter ones
   for `engine/src/{run,verbs,state,idempotency}.ts` and `types/src/money.ts`; CI's `build`
   job runs it and uploads `coverage/lcov.info`. The numbers are in `CONTRIBUTING.md`.
 
-### Added — attester, full hash and explorer links on `AnchorCard` ([#290](https://github.com/ezedike-evan/corridor-in-a-box/issues/290))
+### Added — attester, full hash and explorer links on `AnchorCard` ([#290](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/290))
 
 - The web card links the attested ledger and the attester to stellar.expert for the
   registry's network and shows the full toml sha256 with a copy button.
 
-### Added — a Dockerfile for the service, published to GHCR on release ([#271](https://github.com/ezedike-evan/corridor-in-a-box/issues/271))
+### Added — a Dockerfile for the service, published to GHCR on release ([#271](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/271))
 
 - `Dockerfile` (multi-stage, `node:22-slim`, `USER node`, `HEALTHCHECK` on `/healthz`,
   `EXPOSE 8080`, read-only `corridors/`) and `.dockerignore` (no `.env*`, `web/`,
@@ -73,7 +73,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   provenance and an SBOM, after the same smoke test. Actions pinned by SHA.
 - Not yet run on a Docker daemon by the author; the CI `docker` job is the first build.
 
-### Added — `@corridor/otel`, OpenTelemetry adapters for `Metrics` and `Logger` ([#273](https://github.com/ezedike-evan/corridor-in-a-box/issues/273))
+### Added — `@corridor/otel`, OpenTelemetry adapters for `Metrics` and `Logger` ([#273](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/273))
 
 - New package `@corridor/otel`: `otelMetrics(meter)` (counter per name for `increment`,
   millisecond histogram for `timing`, tags as attributes) and `otelLogger(logger)`
@@ -83,7 +83,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 - `tests/otel.test.ts` uses the SDK's `InMemoryMetricExporter` and asserts counter and
   histogram values after an `execute()` run. Wiring example in `docs/operations.md` §7.
 
-### Added — AWS KMS and Google Cloud KMS `ExternalSigner`s ([#277](https://github.com/ezedike-evan/corridor-in-a-box/issues/277))
+### Added — AWS KMS and Google Cloud KMS `ExternalSigner`s ([#277](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/277))
 
 - `AwsKmsSigner` (`ECC_NIST_EDWARDS25519`, `ED25519_SHA_512`, `MessageType: RAW`) and
   `GcpKmsSigner` (`EC_SIGN_ED25519`, hash in `data`) in `@corridor/stellar`, also at the
@@ -95,7 +95,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 - Tested with fake clients that sign with a real local ed25519 key, through
   `assertSignerProducesValidSignatures`.
 
-### Added — one tag releases every public package ([#263](https://github.com/ezedike-evan/corridor-in-a-box/issues/263))
+### Added — one tag releases every public package ([#263](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/263))
 
 - `.github/workflows/release-packages.yml`: a `vX.Y.Z` tag runs lint, typecheck, tests
   and `pnpm -r build`, publishes every public package with provenance, and creates a
@@ -106,7 +106,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   `scripts/changelog-section.ts` extracts the release notes. Both are unit-tested.
 - "Releasing" checklist in `CONTRIBUTING.md`. Cutting the first tag is a maintainer action.
 
-### Added — property tests for the registry contract ([#283](https://github.com/ezedike-evan/corridor-in-a-box/issues/283))
+### Added — property tests for the registry contract ([#283](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/283))
 
 - `contracts/registry/src/prop_test.rs` (dev-dependency `proptest`, 48 cases per
   property, no regression files) checks: `serves_sep31` / `serves_sep6` are true iff the
@@ -118,7 +118,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 - Adding `proptest` moved `cc` (1.4.2 to 1.5.1) and `find-msvc-tools` in
   `contracts/Cargo.lock`; both are build-time only.
 
-### Added — seeded property tests for the service body and the manifest loader ([#282](https://github.com/ezedike-evan/corridor-in-a-box/issues/282))
+### Added — seeded property tests for the service body and the manifest loader ([#282](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/282))
 
 - `tests/service-properties.test.ts` and `tests/manifest-properties.test.ts` run 600
   generated cases per property, with no dependency (`tests/helpers/seeded.ts`). A
@@ -130,7 +130,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   oversized and poisoned fields and for YAML aliases; any `ok:true` result satisfies
   the schema invariants and parses to itself again.
 
-### Added — `pnpm mock:anchor`, a scriptable mock SEP-31 anchor ([#299](https://github.com/ezedike-evan/corridor-in-a-box/issues/299))
+### Added — `pnpm mock:anchor`, a scriptable mock SEP-31 anchor ([#299](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/299))
 
 - `examples/mock-anchor/server.ts` serves SEP-1, SEP-10, SEP-12, SEP-31 and SEP-38
   over `node:http` with no new runtime dependency, and reproduces anchor misbehaviour
@@ -141,7 +141,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   and reports it UNVERIFIED, as it should for a fictional lane.
 - `tests/mock-anchor.test.ts` drives `execute()` through every scenario.
 
-### Added — `pnpm create:adapter` ([#204](https://github.com/ezedike-evan/corridor-in-a-box/issues/204))
+### Added — `pnpm create:adapter` ([#204](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/204))
 
 - `pnpm create:adapter --id <slug> [--dir <path>]` scaffolds a custom `AnchorAdapter`
   package: `package.json`, an adapter whose verbs all fail "not implemented", a
@@ -150,7 +150,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   never overwritten. `tests/create-adapter.test.ts` generates into a temp dir and
   type-checks the result.
 
-### Added — richer `SourceAnchorAdapter` port and mock ([#215](https://github.com/ezedike-evan/corridor-in-a-box/issues/215))
+### Added — richer `SourceAnchorAdapter` port and mock ([#215](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/215))
 
 - `SourceAnchorAdapter` (which the engine already used for source funding) gains
   optional `name`, `capabilities()`, `quoteDeposit()` and an optional `{ account }`
@@ -160,7 +160,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 - `createMockSourceAdapter` takes `name`, `pendingPolls`, `failOpen` and
   `instructions`, and is unit-tested in `tests/adapter-kit.test.ts`.
 
-### Added — `RedisTokenBucket`, a fleet-wide rate limiter ([#270](https://github.com/ezedike-evan/corridor-in-a-box/issues/270))
+### Added — `RedisTokenBucket`, a fleet-wide rate limiter ([#270](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/270))
 
 - `RedisTokenBucket` in `@corridor/service` implements `RateLimiter` against a
   structural `RedisLike`, so neither ioredis nor node-redis is a dependency. An
@@ -182,7 +182,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 - Added parser-based regression coverage for family types, HELP text, histogram
   buckets, aggregation, and escaped labels.
 
-### Added — `PostgresAuditSink`: a durable, append-only audit trail ([#272](https://github.com/ezedike-evan/corridor-in-a-box/issues/272))
+### Added — `PostgresAuditSink`: a durable, append-only audit trail ([#272](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/272))
 
 The audit trail used to live only in memory, so the service lost it on every
 restart, even when `DATABASE_URL` gave it Postgres.
@@ -204,7 +204,7 @@ restart, even when `DATABASE_URL` gave it Postgres.
 ### Added — flaky-test quarantine (2026-10-21)
 
 A flaky test can be quarantined instead of deleted or silently skipped
-([#284](https://github.com/ezedike-evan/corridor-in-a-box/issues/284)):
+([#284](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/284)):
 
 - `quarantine(issueUrl, name, fn)` in `tests/helpers/quarantine.ts` wraps a
   sequential describe block tagged `[quarantine]`. The main `pnpm test` run
@@ -220,9 +220,9 @@ A flaky test can be quarantined instead of deleted or silently skipped
   and `pnpm test` is one `vitest run`. `turbo.json` and the `.turbo` entries in
   `.gitignore`, `.prettierignore` and `eslint.config.js` are gone, so nobody
   assumes there is task caching
-  ([#285](https://github.com/ezedike-evan/corridor-in-a-box/issues/285)).
+  ([#285](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/285)).
 
-### Added — every service request carries an `X-Request-Id` into the logs and the audit trail ([#269](https://github.com/ezedike-evan/corridor-in-a-box/issues/269))
+### Added — every service request carries an `X-Request-Id` into the logs and the audit trail ([#269](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/269))
 
 Engine logs and audit entries only carried `idempotencyKey` and `corridorId`,
 and the service neither assigned nor returned a request id — so an operator
@@ -246,7 +246,7 @@ handed a `500` and a log file had no way to tie the two together.
   gate detail, reconcile polls, halt notices. `AuditEntry` and `AuditDetail`
   gained optional `requestId` / `traceparent`.
 
-### Breaking — `StellarSettlementSubmitter` refuses mainnet unless it is opted in ([#275](https://github.com/ezedike-evan/corridor-in-a-box/issues/275))
+### Breaking — `StellarSettlementSubmitter` refuses mainnet unless it is opted in ([#275](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/275))
 
 The "don't move real money by accident" check lived only in the example
 launchers (`examples/run-testnet.ts`, `examples/run-service.ts`,
@@ -280,7 +280,7 @@ straight from the manifest and signed whatever `settlement.network` said.
   allowed; explicit ack settles; endpoint/corridor passphrase mismatch refused
   (root read once); unverifiable endpoint retryable.
 
-### Added — `tests/service-http.test.ts`: the service transport, tested over a socket ([#281](https://github.com/ezedike-evan/corridor-in-a-box/issues/281))
+### Added — `tests/service-http.test.ts`: the service transport, tested over a socket ([#281](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/281))
 
 `tests/service.test.ts` drives the pure `route()` in-process, which is the right
 way to test routing — but the transport in `server()` was mostly invisible to
@@ -302,7 +302,7 @@ a real socket.
   `server.close()`, so nothing outlives the test.
 - 12 tests, ~0.3 s. No production code changed.
 
-### Fixed — `web/` reads corridor data and the state list from the repo, not hand copies ([#293](https://github.com/ezedike-evan/corridor-in-a-box/issues/293))
+### Fixed — `web/` reads corridor data and the state list from the repo, not hand copies ([#293](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/293))
 
 `web/lib/corridors.ts` had hand-copied four of the six manifests and kept its
 own copy of `liveness()`, which still treated every lane as SEP-31. The
@@ -320,7 +320,7 @@ payment runner hand-listed the engine's states.
 - `tests/web-data.test.ts` and a CI step fail when the generated files are
   stale.
 
-### Fixed — `RegistryRouteResolver` checks the protocol the corridor declares, not SEP-31 ([#211](https://github.com/ezedike-evan/corridor-in-a-box/issues/211))
+### Fixed — `RegistryRouteResolver` checks the protocol the corridor declares, not SEP-31 ([#211](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/211))
 
 The registry-backed resolver asked every lane the same question — "is this
 anchor attested as serving SEP-31?" — and refused any answer that was not yes.
@@ -354,7 +354,7 @@ would have quietly turned the evidence check off for that lane.
   cannot wave a SEP-6 lane through. The existing cases run through the
   compatibility adapter.
 
-### Added — a worked example of a bespoke HTTP anchor adapter ([#206](https://github.com/ezedike-evan/corridor-in-a-box/issues/206))
+### Added — a worked example of a bespoke HTTP anchor adapter ([#206](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/206))
 
 `examples/adapters/http-stub/` is a complete, runnable `AnchorAdapter` for an
 anchor that speaks a proprietary HTTP API instead of SEP-31. `HttpStubAdapter`
@@ -375,7 +375,7 @@ code: the engine needed no change to route through it, and
 `RegistryRouteResolver` still refuses it for want of an on-chain attestation
 probe unless the domain is explicitly allow-listed.
 
-### Fixed — the attester rejects a domain that is not in canonical form ([#246](https://github.com/ezedike-evan/corridor-in-a-box/issues/246))
+### Fixed — the attester rejects a domain that is not in canonical form ([#246](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/246))
 
 `attest` checked only that a domain was non-empty and `<= 253` bytes, so the
 registry — which keys records by the raw string and appends every key to the
@@ -397,7 +397,7 @@ be reverted on chain. The same list of spellings is pinned in
 `contracts/attester/src/test.rs` and `tests/domain.test.ts`;
 `docs/operations.md` §0 states the rule where a fleet entry is added.
 
-### Added — `describeResolverContract`: the RouteResolver contract, executable ([#260](https://github.com/ezedike-evan/corridor-in-a-box/issues/260))
+### Added — `describeResolverContract`: the RouteResolver contract, executable ([#260](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/260))
 
 A private resolver is written outside this repo against the `RouteResolver`
 interface, and until now nothing shipped with it that could tell its author
@@ -421,7 +421,7 @@ resolver really fails the suite. Both built-ins and
 documents it for out-of-repo authors. vitest is a peer dependency of the
 `./testing` subpath only.
 
-### Added — observed receive assets and a declared country on registry records ([#242](https://github.com/ezedike-evan/corridor-in-a-box/issues/242), design in [#241](https://github.com/ezedike-evan/corridor-in-a-box/issues/241))
+### Added — observed receive assets and a declared country on registry records ([#242](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/242), design in [#241](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/241))
 
 The registry could already answer "does this anchor serve SEP-31", but not "what
 does it actually receive", which is the question a corridor is built around. Two
@@ -464,7 +464,7 @@ The testnet contracts are not redeployed by this change: `upgrade()` needs the
 enrolled operator key, so `contracts/deployments.json` still records the wasm
 that is live, and the hashes change when that job runs.
 
-### Added — `justfile` for the day-to-day commands ([#288](https://github.com/ezedike-evan/corridor-in-a-box/issues/288))
+### Added — `justfile` for the day-to-day commands ([#288](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/288))
 
 `install`, `check`, `contracts`, `web`, `pg-test`, `anchor-up` / `anchor-down` /
 `anchor-doctor`, `secret-scan` and `ci`, each calling the same commands
@@ -472,7 +472,7 @@ that is live, and the hashes change when that job runs.
 `pg-test` starts and removes the Postgres container CI gets from a service, and
 `just --list` documents every recipe. CONTRIBUTING.md now points at `just ci`.
 
-### Added — Zeam (South Africa) probed and added as the second VERIFIED lane ([#225](https://github.com/ezedike-evan/corridor-in-a-box/issues/225))
+### Added — Zeam (South Africa) probed and added as the second VERIFIED lane ([#225](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/225))
 
 `corridors/zeam.corridor.yaml` — USD → ZAR over `mint.zeam.money`, probed
 2026-10-17 with `@corridor/probe`: SEP-10 signed a challenge and got a JWT,
@@ -485,7 +485,7 @@ The payout currency is ZAR, not the KES the issue assumed: Zeam's toml anchors
 `ZARZ` (fiat ZAR) and `GBPZ`, and its Anchor Directory entry lists the
 Democratic Republic of the Congo, Malawi, South Africa, Zambia and Zimbabwe.
 
-### Added — `@corridor/sep6`: a SEP-6 withdrawal adapter on the same port ([#197](https://github.com/ezedike-evan/corridor-in-a-box/issues/197))
+### Added — `@corridor/sep6`: a SEP-6 withdrawal adapter on the same port ([#197](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/197))
 
 `packages/sep6` implements `AnchorAdapter` for a `dest.protocol: sep6` corridor,
 so the engine's `quote → comply → open → settle → reconcile` run needs no
@@ -522,7 +522,7 @@ on-chain leg still goes through `StellarPaymentStrategy`. The `/info` discovery
   and `requestRefund` returns `REFUND_UNSUPPORTED` without a network call, as
   SEP-6 defines no sender-initiated refund.
 
-### Added — chaos suite: no money moves unless the gate passed ([#300](https://github.com/ezedike-evan/corridor-in-a-box/issues/300))
+### Added — chaos suite: no money moves unless the gate passed ([#300](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/300))
 
 `tests/chaos.test.ts` injects one failure at a time into every step — route
 resolution, the four adapter verbs, all seven pre-settle gate checks,
@@ -606,7 +606,7 @@ old behaviour, so a resume is never judged more leniently than before.
 destination protocol explicitly, so parsing them no longer yields the legacy
 deprecation warning. `invalid.corridor.yaml` is left as it was, on purpose.
 
-### Added — pre-settle gate results are logged per check and copied into the audit trail ([#142](https://github.com/ezedike-evan/corridor-in-a-box/issues/142))
+### Added — pre-settle gate results are logged per check and copied into the audit trail ([#142](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/142))
 
 Building on `AuditEntry.checks`, each gate check on the transition out of
 `verifying` is now also logged as `corridor.gate.check` — `info` when it
@@ -636,7 +636,7 @@ codes, G-addresses and statuses only.
 
 `AccountInspector` in `@corridor/stellar` is now the one read-only Horizon
 seam every chain-facing check reuses
-([#149](https://github.com/ezedike-evan/corridor-in-a-box/issues/149)):
+([#149](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/149)):
 
 - `baseReserve()` and `baseFee()` read the latest ledger (stroops converted
   with BigInt, never floats) instead of returning constants. The
@@ -794,7 +794,7 @@ Added `receiverKycCheck(adapter)` GateCheck (name `sep12.receiver`) in `@corrido
 
 ### Maintenance — ESLint 10 landed
 
-- `eslint` 10 landed in [#37](https://github.com/ezedike-evan/corridor-in-a-box/pull/37).
+- `eslint` 10 landed in [#37](https://github.com/corridor-in-a-box/corridor-in-a-box/pull/37).
   The older deferred-upgrade note below records the state at the time; the
   `vitest` major-version upgrade remains deferred.
 - Until a `v0.1.0` tag exists, [Unreleased] links to repository commit history
@@ -1497,4 +1497,4 @@ Initial public release: the walking skeleton.
 - Reference, MX/Bitso, and NG→CN corridor manifests.
 - Docs: key management, "why not Anchor Platform".
 
-[Unreleased]: https://github.com/ezedike-evan/corridor-in-a-box/commits/main
+[Unreleased]: https://github.com/corridor-in-a-box/corridor-in-a-box/commits/main

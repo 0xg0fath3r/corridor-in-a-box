@@ -1,9 +1,9 @@
 # RFC 0002: Source-side funding
 
 - Status: proposed
-- Issue: [#214](https://github.com/ezedike-evan/corridor-in-a-box/issues/214)
-- Depends on: [#178](https://github.com/ezedike-evan/corridor-in-a-box/issues/178) (closed), [#182](https://github.com/ezedike-evan/corridor-in-a-box/issues/182) (closed)
-- Follow-up implementation: [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216)
+- Issue: [#214](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/214)
+- Depends on: [#178](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/178) (closed), [#182](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/182) (closed)
+- Follow-up implementation: [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216)
 
 ## Summary
 
@@ -189,7 +189,7 @@ Unknown modes fail validation.
 
 ## Follow-up implementation issues
 
-- [#216](https://github.com/ezedike-evan/corridor-in-a-box/issues/216) - engine:
+- [#216](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/216) - engine:
   optional fund step that on-ramps via the source adapter before settle.
 - Manifest/schema: add `source.funding` mode, treasury account, and two-leg quote
   fields; reject unknown modes.

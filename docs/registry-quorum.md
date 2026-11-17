@@ -2,7 +2,7 @@
 
 - **Status**: Proposed
 - **Author**: `chizzy0011`
-- **Related Issue**: [#244](https://github.com/ezedike-evan/corridor-in-a-box/issues/244)
+- **Related Issue**: [#244](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/244)
 - **Target Contracts**: `contracts/registry`, `contracts/attester`
 - **Target SDK**: `@corridor/registry`, `@corridor/router`
 

@@ -17,7 +17,7 @@ generated into `lib/generated/` from the manifests and
 from the repo root and commit the result. CI fails when the committed files
 are out of date.
 
-Since [#80](https://github.com/ezedike-evan/corridor-in-a-box/pull/80) `web/` is
+Since [#80](https://github.com/corridor-in-a-box/corridor-in-a-box/pull/80) `web/` is
 its own pnpm workspace root (`web/pnpm-workspace.yaml`, with its own lockfile), so
 it builds and runs on its own — gated by its own CI job (`pnpm lint` +
 `pnpm typecheck` + `pnpm build`, see `.github/workflows/ci.yml`) rather than by
