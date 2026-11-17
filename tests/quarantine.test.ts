@@ -31,9 +31,9 @@ describe("quarantine: every entry names its issue", () => {
 
 describe("quarantine: issue URL check", () => {
   it("accepts GitHub issue URLs only", () => {
-    expect(isIssueUrl("https://github.com/ezedike-evan/corridor-in-a-box/issues/284")).toBe(
-      true,
-    );
+    expect(
+      isIssueUrl("https://github.com/corridor-in-a-box/corridor-in-a-box/issues/284"),
+    ).toBe(true);
     expect(isIssueUrl("http://github.com/o/r/issues/1")).toBe(false);
     expect(isIssueUrl("https://github.com/o/r/issues/")).toBe(false);
     expect(isIssueUrl("https://github.com/o/r/issues/1#x")).toBe(false);

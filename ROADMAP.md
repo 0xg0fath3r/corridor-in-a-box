@@ -30,7 +30,7 @@ system. Items marked ✅ are done.
   _Update (2026-09-01):_ cursor seeding fixed in #65 — `reference-anchor.sh up`
   reseeds the observer cursor from Horizon's tip, #66 added `doctor`'s
   cursor-lag check, and #67/#75 added `pnpm verify:corridor` and the scheduled
-  [`reference-corridor`](https://github.com/ezedike-evan/corridor-in-a-box/actions/workflows/reference-corridor.yml)
+  [`reference-corridor`](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/workflows/reference-corridor.yml)
   workflow. The pending proof is that workflow going green; it currently fails,
   so this item stays ⬜.
   _Update (2026-10-24):_ the failure it had was the signer draining
@@ -47,7 +47,7 @@ system. Items marked ✅ are done.
   (its seed is public), so the anchor now receives on an account only this repo
   holds; and the reference server never pays SEP-31 out by itself, so
   `reference-anchor.sh payout-watch` triggers its payout endpoint, playing the
-  anchor's operator. [Run 43969161708](https://github.com/ezedike-evan/corridor-in-a-box/actions/runs/43969161708) went
+  anchor's operator. [Run 43969161708](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/runs/43969161708) went
   `… → settled → reconciled → completed`, settle tx
   [`81c46422…`](https://stellar.expert/explorer/testnet/tx/81c4642216b884100b34fa018462bb9cd7587886307d59d923dccbf87011b630) (10 USDC, ledger 5768820). Scope: this is the self-hosted
   reference anchor with its fiat payout simulated, not a third-party anchor.

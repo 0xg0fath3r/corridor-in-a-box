@@ -1,6 +1,6 @@
 # corridor-in-a-box
 
-[![CI](https://github.com/ezedike-evan/corridor-in-a-box/actions/workflows/ci.yml/badge.svg)](https://github.com/ezedike-evan/corridor-in-a-box/actions/workflows/ci.yml)
+[![CI](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/workflows/ci.yml/badge.svg)](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/workflows/ci.yml)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](./LICENSE)
 [![Node](https://img.shields.io/badge/node-%E2%89%A522-339933?logo=node.js&logoColor=white)](./.nvmrc)
 
@@ -317,7 +317,7 @@ remaining Phase-1 item.
 now reseeds the observer cursor from Horizon's tip on every start (see [the
 observer cursor](./docs/operations.md#the-observer-cursor)), #66 added a
 cursor-lag check to `doctor`, and #67/#75 added `pnpm verify:corridor` plus the
-scheduled [`reference-corridor`](https://github.com/ezedike-evan/corridor-in-a-box/actions/workflows/reference-corridor.yml)
+scheduled [`reference-corridor`](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/workflows/reference-corridor.yml)
 workflow, which runs the whole corridor against the reference stack. The stale
 cursor is no longer the known blocker.
 
@@ -326,7 +326,7 @@ was ours: `getTransaction` polled the anchor without the SEP-10 token, so every
 status read was a 403 that the engine logged as `error`. Fixed, together with
 two harness gaps (the anchor now receives on an account this repo controls, and
 `reference-anchor.sh payout-watch` triggers the reference server's SEP-31
-payout, which it never does on its own). [Run 43969161708](https://github.com/ezedike-evan/corridor-in-a-box/actions/runs/43969161708):
+payout, which it never does on its own). [Run 43969161708](https://github.com/corridor-in-a-box/corridor-in-a-box/actions/runs/43969161708):
 
 ```
 created → quoted → compliant → opened → verifying → settling → settled → reconciled → completed

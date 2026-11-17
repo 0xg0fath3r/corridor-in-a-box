@@ -136,7 +136,7 @@ Don't delete or `.skip` a test that flakes. Open an issue for it, then wrap it i
 
 ```ts
 quarantine(
-  "https://github.com/ezedike-evan/corridor-in-a-box/issues/123",
+  "https://github.com/corridor-in-a-box/corridor-in-a-box/issues/123",
   "socket 413",
   () => {
     it("rejects a body over the cap", async () => {

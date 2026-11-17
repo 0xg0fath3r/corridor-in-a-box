@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 export const ADAPTER_ID_PATTERN = /^[a-z0-9-]+$/;
 
 const REPO_ROOT = fileURLToPath(new URL("..", import.meta.url));
-const REPO_URL = "git+https://github.com/ezedike-evan/corridor-in-a-box.git";
+const REPO_URL = "git+https://github.com/corridor-in-a-box/corridor-in-a-box.git";
 
 export interface CreateAdapterArgs {
   id?: string;
@@ -84,8 +84,8 @@ export function createAdapter(opts: CreateAdapterOptions): CreateAdapterResult {
       url: REPO_URL,
       ...(directory && { directory: directory.split("\\").join("/") }),
     },
-    bugs: { url: "https://github.com/ezedike-evan/corridor-in-a-box/issues" },
-    homepage: "https://github.com/ezedike-evan/corridor-in-a-box#readme",
+    bugs: { url: "https://github.com/corridor-in-a-box/corridor-in-a-box/issues" },
+    homepage: "https://github.com/corridor-in-a-box/corridor-in-a-box#readme",
     keywords: ["stellar", "corridor", "adapter", `custom:${id}`],
     type: "module",
     engines: { node: ">=22" },
