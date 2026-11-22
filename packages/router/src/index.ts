@@ -98,9 +98,16 @@ export {
 
 export { createAdapterRegistry } from "./adapters";
 export type { AdapterFactory, AdapterRegistry } from "./adapters";
+
+// SEP-10 lane check: whether a receiving anchor's login accepts our own key.
+export {
+  checkLane,
+  type LaneCheckOptions,
+  type LaneCheckResult,
+  type LaneStatus,
+} from "./lane-check";
 export { appendOptionReason, formatOptionReason, summarizeOptionReasons } from "./reasons";
 export type { OptionReasonStep, ReasonedOption, SummarizedOptionReason } from "./reasons";
-export {
   DEFAULT_PARALLEL_DEADLINE_MS,
   formatNoPriceWithinReason,
   priceCandidatesInParallel,
