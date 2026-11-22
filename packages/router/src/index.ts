@@ -99,8 +99,15 @@ export {
 export { createAdapterRegistry } from "./adapters";
 export type { AdapterFactory, AdapterRegistry } from "./adapters";
 
-export { filterByCircuitBreaker } from "./breaker-filter";
+export { requestLockedOption } from "./firm-quote";
 export type {
+  FirmQuoteCandidate,
+  FirmQuoteDroppedOption,
+  FirmQuoteResult,
+  LockedRouteOption,
+  RequestLockedOptionOptions,
+} from "./firm-quote";
+export { filterByCircuitBreaker } from "./breaker-filter";
   BreakerDroppedCandidate,
   BreakerFilterCandidate,
   BreakerFilterResult,
