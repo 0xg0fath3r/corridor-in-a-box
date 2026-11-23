@@ -7,6 +7,16 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 
 ## [Unreleased]
 
+### Added — conformance test kit for planners ([#616](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/616))
+
+- `@corridor/router/testing` exports `describePlannerContract`, `checkPlannerContract` and
+  `expectPlannerContract`: the planner rules as executable cases (an unattested option is never
+  offered, every dropped option carries a reason, the same input yields the same order, every label
+  is `locked`, `indicative` or `estimated`). Labels are the router's `AllowedPriceLabel`.
+  Documented in `docs/route-resolver.md`.
+- `tests/planner-contract.test.ts` runs the suite over a stub planner and asserts it fails a planner
+  that breaks each rule.
+
 ### Added — wallet route manifest shape ([#646](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/646))
 
 - `protocol: wallet` destinations: the corridor declares `asset`, `asset_issuer` (optional), `settlement.network`
