@@ -221,6 +221,12 @@ export type {
   RouteRequest,
 } from "./planner";
 
+export {
+  DEFAULT_ESTIMATE_MARGIN_BPS,
+  applyEstimateMargin,
+  fetchIndicativePrice,
+} from "./indicative-price";
+export type { IndicativePriceRequest, IndicativeRouteOption } from "./indicative-price";
 export { PinnedRouteResolver, UnpinnedRouteError } from "./pinned-resolver";
 export type {
   PinnedRouteResolverOptions,
