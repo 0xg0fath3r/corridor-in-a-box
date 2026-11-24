@@ -7,6 +7,21 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 
 ## [Unreleased]
 
+### Changed — probe findings recorded for MyKobo, BlindPay, Coins.ph and Anclap ([#650](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/650), [#651](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/651), [#653](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/653), [#654](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/654))
+
+- `mykobo.co` (#650): the probe is right and the anchor's endpoint is down. The toml loads and
+  advertises SEP-6, SEP-10, SEP-12, SEP-24 and SEP-31, but every one of those APIs lives on
+  `stellar.mykobo.co`, a CNAME to an AWS load balancer name that no longer exists (NXDOMAIN), so
+  `sep31_info` fails with `fetch failed` before any HTTP exchange. SEP-31 `GET /info` needs no
+  auth, so there is nothing to fix in the probe.
+- `blindpay.com` (#651): `toml_fetch` gets HTTP 403 from a Cloudflare challenge page; nothing about
+  what it serves can be read.
+- `coins.ph` (#653): the domain resolves, but `/.well-known/stellar.toml` returns an HTML 404 page
+  (some attempts also reset the TLS connection), so there is no toml and no SEP-31 receive side.
+- `anclap.com.ar` (#654): the domain does not exist in DNS (NXDOMAIN, no name servers).
+- Dated findings are in `contracts/anchors.json`; `tests/probe-anchor-findings.test.ts` checks the
+  records and that the probe reports an unreachable SEP-31 host as a `sep31_info` failure.
+
 ### Added — send app page scaffold with a permanent testnet banner ([#684](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/684))
 
 - New `/send` route in the web app (`web/app/send/layout.tsx`, `web/app/send/page.tsx`) with a
