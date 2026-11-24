@@ -40,6 +40,13 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   `RoutePlanner` (`packages/router/src/planner.ts`), matching the route planner interface sketch
   in `docs/rfcs/0004-smart-router.md` §1 with TSDoc on every type and field.
 
+### Changed — estimated-price defaults follow RFC 0004 D3 ([#610](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/610))
+
+- `buildEstimatedOption` now defaults to a 50 bps margin (was 100) and drops a candidate unless it has
+  at least 100 samples (was 20) in the window and at least 7 days of history. The new
+  `minEstimateSpanDays` policy field sets that minimum, measured as now minus the oldest usable
+  sample across the whole history, not inside the window. A dropped outcome now carries `minSpanDays`.
+
 ### Added — indicative price from SEP-38 `GET /price` ([#609](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/609))
 
 - `fetchIndicativePrice()` in `@corridor/router` reads an anchor's SEP-38 `GET /price` when it
