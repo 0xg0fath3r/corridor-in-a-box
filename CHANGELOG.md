@@ -7,6 +7,26 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 
 ## [Unreleased]
 
+### Added — send app: amount form, route options, locked-price countdown and recipient fields ([#685](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/685), [#686](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/686), [#687](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/687), [#688](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/688))
+
+- `/send` now runs the send flow inside the existing scaffold and testnet banner. The form checks
+  the amount as a decimal string (positive, at most 7 decimals, within Stellar's limit and the
+  anchor's min and max when known) and offers only destinations read from the testnet corridor
+  manifests ([#685](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/685)).
+- Route options use the router's `RouteOption` and show every option with its own label and
+  RFC 0004 §2 wording ("Recipient gets X. Locked for N s.", "About X. Final amount set at payout.",
+  "About X (estimated)" or "At least X (estimated)"), as a keyboard-usable radio group. Router
+  reasons are reworded in plain language ([#686](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/686)).
+- A locked price counts down to its expiry; once it expires the expired-price screen replaces it
+  and Send is disabled, and Send re-checks the clock at the moment it is pressed ([#687](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/687)).
+- Recipient fields are built from the receiving anchor's `GET /sep31/info`
+  (`fields.transaction`) and SEP-12 `GET /customer` responses, with no field list in the app, and
+  reload when the route changes. Transaction fields go with the payment as `destinationFields`;
+  SEP-12 fields are kept apart for the anchor's KYC server ([#688](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/688)).
+- Route planning, the field lookup and sending are injected into `<SendApp>` (`PlanRoutes`,
+  `LoadReceiverFields`, `SendPayment` in `web/lib/send.ts`). `@corridor/service` offers none of
+  them yet, so the page says routes can't be listed rather than show made-up ones.
+
 ### Added — Rate history schema and migrations ([#589](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/589))
 
 - A `rate_samples` Postgres table for RFC 0004 §3: network (`testnet` or `public`), sell and
