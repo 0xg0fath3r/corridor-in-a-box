@@ -7,6 +7,23 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 
 ## [Unreleased]
 
+### Added — poll SEP-38 indicative prices from attested anchors ([#590](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/590))
+
+- `pollSep38Prices` in `@corridor/engine` runs one collection: it polls every anchor the
+  registry attests with a passing `sep38_quote` probe and a fresh attestation (plus any anchors
+  named directly), and writes one `sep38_price` sample per listed pair, tagged with the anchor
+  domain, through `PostgresRateHistoryStore`. A collector loop calls it on its schedule.
+- The quote server is read from `ANCHOR_QUOTE_SERVER` in the anchor's stellar.toml (never
+  guessed) and must be a public https URL. Sell assets come from the anchor's `GET /info`, so
+  they are issuer-qualified SEP-38 ids; `GET /prices` is sent with `sell_asset` and the required
+  `sell_amount`, and `GET /price` with the `context` the toml implies, through the router's
+  `fetchIndicativePrice`.
+- The stored rate is buy units per one sell unit (`buy_amount ÷ sell_amount`, fees included),
+  computed on scaled integers. `fetchIndicativePrice` takes an optional `rateScale` so rate
+  history keeps 18 decimal places.
+- Each request has a timeout. An anchor, a sell asset or a pair that fails (401, timeout,
+  malformed body, store refusal) is reported in the result and never stops the rest of the run.
+
 ### Added — outlier flags in rate history, Flutterwave and Bitso findings, and five African anchors ([#602](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/602), [#660](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/660), [#661](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/661), [#664](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/664))
 
 - Rate history flags outliers ([#602](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/602)). `PostgresRateHistoryStore.recordFlaggingOutliers`

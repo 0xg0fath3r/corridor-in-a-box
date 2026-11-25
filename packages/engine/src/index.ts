@@ -57,6 +57,7 @@ export {
   RATE_NETWORKS,
   PostgresRateHistoryStore,
   assertRateSample,
+  isSep38AssetId,
   assertRateDailySummary,
   type RateSeries,
   type RateNetwork,
@@ -178,3 +179,22 @@ export {
   ExternalQuoteProvider,
 } from "@corridor/adapter-kit";
 export { checkCompatibility } from "./compat";
+export {
+  DEFAULT_SEP38_REFERENCE_AMOUNT,
+  DEFAULT_SEP38_TIMEOUT_MS,
+  DEFAULT_SEP38_MAX_STALENESS_LEDGERS,
+  pollSep38Prices,
+  findSep38Anchors,
+  resolveSep38QuoteServer,
+  stellarAssetsFromInfo,
+  buyAssetsFromPrices,
+  type Sep38AttestationSource,
+  type RateSampleRecorder,
+  type Sep38PollTarget,
+  type PollSep38PricesOptions,
+  type Sep38PairOutcome,
+  type Sep38AnchorOutcome,
+  type Sep38SkippedAnchor,
+  type Sep38PollResult,
+  type Sep38TomlEndpoints,
+} from "./rate-collector-sep38";
