@@ -21,6 +21,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   throw a `RangeError` instead of ranking silently wrong.
 - A full `RouteOption` can be ranked directly. Property tests use the repo's seeded generator:
   the result is a permutation of the input and stable for equal inputs.
+### Added — Planner step 1: `candidates()` by destination asset and country ([#604](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/604))
+
+- `candidates(request, corridors)` in `@corridor/router` returns every configured corridor whose
+  destination asset and country match the request, plus every other corridor with the reason it
+  did not match (RFC 0004 planner step 1). Configuration only: no registry, network or pricing.
+- Optional `dest.country` manifest field (ISO 3166-1 alpha-2, validated in `@corridor/manifest`).
+  When it is absent, the planner falls back to `compliance.dest_jurisdiction`, so existing
+  manifests and their hashes are unchanged.
 
 ### Added — Rate history page ([#601](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/601))
 
