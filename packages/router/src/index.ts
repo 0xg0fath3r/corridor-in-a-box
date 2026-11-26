@@ -256,5 +256,7 @@ export type {
   PinnedRunStore,
 } from "./pinned-resolver";
 
-export { rank } from "./rank";
-export type { RankableOption } from "./rank";
+// RFC 0004 ranking: cautious recipient amount per label, then reliability,
+// then speed, then domain. Pure and deterministic.
+export { rank, cautiousRecipientAmount } from "./rank";
+export type { RankableOption, RankOptions } from "./rank";
