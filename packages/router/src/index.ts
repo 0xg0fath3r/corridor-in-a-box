@@ -260,6 +260,21 @@ export type {
   PinnedRunStore,
 } from "./pinned-resolver";
 
+// RFC 0004 route-option score: run-history success rate, discounted by attestation age.
+export {
+  ATTESTATION_PENALTY_LEDGERS,
+  MIN_RELIABILITY_RUNS,
+  RELIABILITY_WINDOW_MS,
+  reliability,
+} from "./reliability";
+export type {
+  ReliabilityAttestationSource,
+  ReliabilityDeps,
+  ReliabilityRun,
+  ReliabilityRunOutcome,
+  ReliabilityRunStore,
+} from "./reliability";
+
 // RFC 0004 ranking: cautious recipient amount per label, then reliability,
 // then speed, then domain. Pure and deterministic.
 export { rank, cautiousRecipientAmount } from "./rank";
