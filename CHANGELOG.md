@@ -21,6 +21,7 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
   throw a `RangeError` instead of ranking silently wrong.
 - A full `RouteOption` can be ranked directly. Property tests use the repo's seeded generator:
   the result is a permutation of the input and stable for equal inputs.
+
 ### Added — estimate gap when a business guarantees estimated prices ([#627](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/627))
 
 - With `guaranteeEstimates` on (`EngineDeps` or `ExecuteOptions`, RFC 0004 D4), the engine
