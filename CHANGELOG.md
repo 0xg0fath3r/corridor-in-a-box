@@ -7,6 +7,14 @@ follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html) once it reache
 
 ## [Unreleased]
 
+### Added — Rate history page ([#601](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/601))
+
+- `docs/rate-history.md` documents rate history per RFC 0004 §3: the four sources (SEP-38
+  indicative, DEX, reference FX, own payment) and each one's licence, the 15-minute collection
+  into Postgres, the daily summary (min, P25, median, P75, max, sample count) and the
+  minimum-data rule (at least 7 days and 100 samples). Undecided points are marked "to confirm".
+  Linked from the README docs list and from RFC 0004 §3.
+
 ### Added — poll SEP-38 indicative prices from attested anchors ([#590](https://github.com/corridor-in-a-box/corridor-in-a-box/issues/590))
 
 - `pollSep38Prices` in `@corridor/engine` runs one collection: it polls every anchor the
